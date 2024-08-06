@@ -14,3 +14,20 @@
     margin-top:-50px;
     margin-left:-50px;
 }
+
+table, tr, td{
+    border: 1px solid black;
+    margin:20px;
+    width: 90%;
+    
+}
+
+th,td{
+    padding: 15px;
+}
+td{
+    max-width: 60%; /* Example value, adjust as needed */
+    overflow-wrap: break-word; /* Ensure long words break and wrap */
+    word-wrap: break-word; /* Older property for compatibility */
+    white-space: normal; /* Ensure text wraps correctly */
+}
