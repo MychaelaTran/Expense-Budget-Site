@@ -31,3 +31,13 @@ td{
     word-wrap: break-word; /* Older property for compatibility */
     white-space: normal; /* Ensure text wraps correctly */
 }
+
+#descriptionE{
+    background: transparent;
+    bordeR: none;
+    outline: none;
+    box-shadow: none;
+    resize: none; /* Prevents resizing of the textarea */
+    overflow: hidden; /* Hides scrollbar */
+
+}
