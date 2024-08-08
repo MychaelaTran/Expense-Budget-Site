@@ -14,18 +14,48 @@
     margin-top:-50px;
     margin-left:-50px;
 }
-
+table{
+    width: 96%;
+    margin-left: 10px;
+    
+}
 table, tr, td{
     border: 1px solid black;
-    margin:20px;
-    width: 90%;
-    
+     
+}
+/*this is to have the width set for the cols of the editable elements*/
+#startD{
+    width:60%;
+}
+#startDa{
+    width:20%;
+}
+#startA{
+    width:20%
+}
+.description, .date, .amount{
+    width: 100%;
+}
+
+/*normal state*/
+input {
+    border: none;
+    outline: none; 
+}
+
+/* Remove border in focus state */
+input:focus {
+    border: none;
+    outline: none; /* Optional: remove outline */
+}
+input:hover{
+    border: 1px solid black;
 }
 
 th,td{
     padding: 15px;
 }
-td{
+input.text{
     max-width: 60%; /* Example value, adjust as needed */
     overflow-wrap: break-word; /* Ensure long words break and wrap */
     word-wrap: break-word; /* Older property for compatibility */
@@ -40,4 +70,29 @@ td{
     resize: none; /* Prevents resizing of the textarea */
     overflow: hidden; /* Hides scrollbar */
 
+}
+#newExpense{
+    padding: 8px;
+    margin: 20px;
+    cursor: pointer;
+}
+#newExpense:hover{
+    background-color: gray;
+}
+
+#amountI{
+    background-color: transparent;
+    background: transparent;
+    bordeR: none;
+    outline: none;
+    color: transparent;
+    box-shadow: none;
+}
+
+.delete{ 
+    border-radius: 5px;
+    
+}
+.delete:hover{
+    background-color: gray;
 }
