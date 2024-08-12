@@ -1,6 +1,14 @@
 #header1{
     background-color: rgb(153, 245, 153);
     text-align: center;
+    font-size: 2.5em;
+    padding: 20px;
+}
+header{
+    background-color: blue;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); ;
+    padding-top: 40px;
+    
 }
 
 .data{
@@ -17,12 +25,28 @@
 table{
     width: 96%;
     margin-left: 10px;
+    border-collapse: collapse;
+    padding-top: 20px;
     
 }
 table, tr, td{
     border: 1px solid black;
+    
      
 }
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
 /*this is to have the width set for the cols of the editable elements*/
 #startD{
     width:60%;
@@ -39,10 +63,17 @@ table, tr, td{
 #startDel{
     width:min-content;
 }
-.description, .date, .amount{
+.description, .date, .amount1{
     width: 100%;
 }
 
+#H1totalIncome, #H1totalExpense, #H1difference {
+    position: relative;
+    padding: 20px;
+    margin: 20px;
+    border: 2px solid black;
+    display: inline-block; /*makes border aroundrtext*/
+}
 
 
 /*normal state*/

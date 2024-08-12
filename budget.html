@@ -15,30 +15,6 @@
       <h1>Budgeting/Expense Tracker Site!</h1>
   </header>
 
-  <!--
-    <h2 id="expensess">expensess</h2>
-        <form>
-            <label for="descriptionE">Description: </label>
-            <textarea id="descriptionE" name="descriptionE"></textarea>
-
-            <label for="amountE">Amount: </label>
-            <input type="number" id="amount" name="amountE"><br>
-            <input type="submit" value="Submit"> 
-            <input type="reset" value="Reset">
-        </form>
-
-    <h2 id="income">income</h2>
-        <form>
-            <label for="descriptionI">Description: </label>
-            <input type="text" id="descriptionI" name="descriptionI"> <br>
-            <label for="amountI">Amount: </label>
-            <input type="number" id="amountI" name="amountI"><br>
-            <input type="submit" value="Submit"> 
-            <input type="reset" value="Reset">
-        </form>
-
-    <li><a href="index.html">Sign out</a></li> <br>
-    -->
     <table id="expenses">
         <tr>
           <th>Description</th>
@@ -63,7 +39,7 @@
             <td id="startDa" class="date">
                 <input class="date" type="date">
             </td>
-            <td id="startA" class="amount">
+            <td id="startA" class="amount1">
                 <input class="amount" type="number">
             </td>
             <td id="startDel">
@@ -74,7 +50,23 @@
       </table>
 
       <button id="newExpense">Add Row</button>
-        
+
+      <br>
+      <br>
+
+      <div class =totalIncome>
+        <h1 id="H1totalIncome">$0.00</h1>
+      </div>
+
+      <div class="H1totalExpense">
+        <h1 id="H1totalExpense">$0.00</h1>
+      </div>
+
+      <div class="difference">
+        <h1 id="H1difference">$0.00</h1>
+      </div>
+
+      <a href="budget.html">Home</a>
 
   
       <script src="https://apis.google.com/js/platform.js" async defer></script>
@@ -84,7 +76,10 @@
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
       <script src="budget.js"></script>
       <script src="https://accounts.google.com/gsi/client" async></script>
-</body>
+       <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
 </html>
 
 
