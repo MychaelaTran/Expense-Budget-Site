@@ -1,3 +1,22 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+// Initialize Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyBsGkENtJukk6UjhZiXo8-muuKbq9w4vMo",
+    authDomain: "budgetexpensetracker-ce508.firebaseapp.com",
+    projectId: "budgetexpensetracker-ce508",
+    storageBucket: "budgetexpensetracker-ce508.appspot.com",
+    messagingSenderId: "80057213024",
+    appId: "1:80057213024:web:656a9927ec7fe38ddd6305",
+    measurementId: "G-H4R1LLNJHX"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+
+
 document.addEventListener('DOMContentLoaded', () => { 
     //delete button functionalliyu 
     document.getElementById('expenses').addEventListener('click', function(event) { 
@@ -165,5 +184,20 @@ function difference(){
     const differenceElement = document.getElementById('H1difference');
     differenceElement.textContent = `$${difference.toFixed(2)}`;
 }
+
+
+
+
+
+
+document.getElementById('logoutButton').addEventListener('click', function() {
+    signOut(auth).then(() => {
+        // Sign-out successful, redirect to the login page
+        window.location.href = "login.html"; // Replace with your login page
+    }).catch((error) => {
+        // Handle errors here
+        alert("Error logging out: " + error.message);
+    });
+});
 
 
