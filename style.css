@@ -67,13 +67,7 @@ tr:nth-child(even) {
     width: 100%;
 }
 
-#H1totalIncome, #H1totalExpense, #H1difference {
-    position: relative;
-    padding: 20px;
-    margin: 20px;
-    border: 2px solid black;
-    display: inline-block; /*makes border aroundrtext*/
-}
+
 
 
 /*normal state*/
@@ -134,4 +128,15 @@ input.text{
 }
 .delete:hover{
     background-color: gray;
+}
+
+.totals{
+    display: inline-block
+}
+#H1totalIncome, #H1totalExpense, #H1difference {
+    position: relative;
+    padding: 20px;
+    margin: 20px;
+    border: 2px solid black;
+    display: inline-block; /*makes border aroundrtext*/
 }

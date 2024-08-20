@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
 });
 
+
+
 const newExpense = document.getElementById('newExpense');
 
 newExpense.addEventListener('click', createExpense);
@@ -109,7 +111,7 @@ function updateAmountColor(row) {
 function updateIncomeTotal(){
     const table = document.getElementById('expenses');
     const rows = table.querySelectorAll('tr');
-    const incomeTotal = document.getElementById('totalIncome');
+    const incomeTotal = document.getElementById('H1totalIncome');
     let colAmt = rows.length;
     console.log(`number of rows ${colAmt}`);
     let totalIncome = 0;
@@ -135,7 +137,7 @@ function updateExpenseTotal(){
     console.log("function ran");
     const table = document.getElementById('expenses');
     const rows  = table.querySelectorAll('tr');
-    const expenseTotal = document.getElementById('totalExpense');
+    const expenseTotal = document.getElementById('H1totalExpense');
     let colAmt = rows.length;
     let totalExpense = 0;
 
@@ -160,7 +162,7 @@ function difference(){
     const totalIncome = updateIncomeTotal();
     const totalExpense = updateExpenseTotal();
     const difference = totalIncome - totalExpense;
-    const differenceElement = document.getElementById('difference');
+    const differenceElement = document.getElementById('H1difference');
     differenceElement.textContent = `$${difference.toFixed(2)}`;
 }
 
