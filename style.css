@@ -104,13 +104,14 @@ input.text{
     overflow: hidden; /* Hides scrollbar */
 
 }
-#newExpense{
+#newExpense, #save{
     padding: 8px;
     margin: 20px;
     cursor: pointer;
 }
-#newExpense:hover{
+#newExpense:hover, #save:hover{
     background-color: gray;
+    size: 1.2em;
 }
 
 #amountI{

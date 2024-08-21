@@ -1,7 +1,18 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
-// Initialize Firebase
+document.addEventListener('DOMContentLoaded', () => {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            loadExpenses(); // Only call loadExpenses if the user is logged in
+        } else {
+            // User is signed out
+            window.location.href = "login.html"; // Redirect to login page
+        }
+    });
+});
 const firebaseConfig = {
     apiKey: "AIzaSyBsGkENtJukk6UjhZiXo8-muuKbq9w4vMo",
     authDomain: "budgetexpensetracker-ce508.firebaseapp.com",
@@ -14,6 +25,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
+
 
 
 
@@ -29,6 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
     });
+
+    document.getElementById('save').addEventListener('click', async function(){
+        saveData();
+    })
 
     //inital color of the first row bc not dynamically added 
 
@@ -54,18 +71,56 @@ document.addEventListener('DOMContentLoaded', () => {
             difference();
         }
     });
+
+    
     
 
     
 });
 
+async function loadExpenses() {
+    const q = query(collection(db, "expenses"), where("uid", "==", auth.currentUser.uid));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const row = document.createElement('tr');
+
+        // Populate the row with data from Firestore
+        const description = document.createElement('td');
+        description.textContent = data.description;
+
+        const selectionBox = document.createElement('td');
+        selectionBox.textContent = data.type;
+
+        const date = document.createElement('td');
+        date.textContent = data.date;
+
+        const amount = document.createElement('td');
+        amount.textContent = `$${data.amount.toFixed(2)}`;
+
+        const deleteBtn = document.createElement('td');
+        deleteBtn.innerHTML = `<button class="delete">Delete</button>`;
+
+        // Add cells to the row
+        row.appendChild(description);
+        row.appendChild(selectionBox);
+        row.appendChild(date);
+        row.appendChild(amount);
+        row.appendChild(deleteBtn);
+
+        // Append the row to the table
+        document.getElementById('expenses').appendChild(row);
+    });
+}
+
+// Call loadExpenses when DOM content is loaded
 
 
 const newExpense = document.getElementById('newExpense');
 
 newExpense.addEventListener('click', createExpense);
 
-function createExpense() {
+async function createExpense() {
     const expenseTable = document.getElementById('expenses');
     const row = document.createElement('tr');
 
@@ -111,7 +166,14 @@ function createExpense() {
     updateAmountColor(row);
     
     expenseTable.appendChild(row); 
+
+    
 }
+
+
+//ISSUE IS its savinga the data to firebase BEFORE its edited not adter
+
+
 
 function updateAmountColor(row) {
     const selectBox = row.querySelector('.selectBox');
@@ -134,7 +196,7 @@ function updateIncomeTotal(){
     let colAmt = rows.length;
     console.log(`number of rows ${colAmt}`);
     let totalIncome = 0;
-    for(i=1; i<colAmt; i++){
+    for(let i=1; i<colAmt; i++){
         const row = rows[i];
         const selectBox = row.querySelector('.selectBox');
         const amountNum = row.querySelector('.amount');
@@ -150,6 +212,36 @@ function updateIncomeTotal(){
     
     incomeTotal.textContent = `$${totalIncome.toFixed(2)}`;
     return totalIncome;
+}
+
+async function saveData(){
+    const table = document.getElementById('expenses');
+    const rows = document.getElementsByTagName('tr');
+    const amtRows = rows.length;
+
+    for(let i=0; i < amtRows; i++){
+        const row = rows[i];
+        const description = row.querySelector('.description')?.value || '';
+        const type = row.querySelector('.selectBox')?.value || 'expense';
+        const date = row.querySelector('.date')?.value || '';
+        const amount = parseFloat(row.querySelector('.amount')?.value) || 0;
+        
+        if (description && type && date && amount) {
+            try {
+                // Add or update the document for this row
+                await addDoc(collection(db, "expenses"), {
+                    description: description,
+                    type: type,
+                    date: date,
+                    amount: amount,
+                    uid: auth.currentUser.uid // Associate with the current user
+                });
+                console.log("Row added/updated successfully!");
+            } catch (e) {
+                console.error("Error updating row in Firebase: ", e);
+            }
+        }
+    }
 }
 
 function updateExpenseTotal(){
@@ -199,5 +291,3 @@ document.getElementById('logoutButton').addEventListener('click', function() {
         alert("Error logging out: " + error.message);
     });
 });
-
-
