@@ -1,0 +1,44 @@
+async function loadExpenses() {
+    const q = query(collection(db, "expenses"), where("uid", "==", auth.currentUser.uid), orderBy("date","desc"));
+    //query created that fetches the documents from 'expenses' where the uid matches
+    //query(refrence to firestore collection, (optional query constraint where for firestore to filter), (optional order it by the date field in the collection descendint order))
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const row = document.createElement('tr');
+
+        // Populate the row with data from Firestore
+        const description = document.createElement('td');
+        description.classList.add('description')
+        description.textContent = data.description;
+
+        const selectionBox = document.createElement('td');
+        selectionBox.classList.add('selectBox')
+        selectionBox.textContent = data.type;
+
+        const date = document.createElement('td');
+        date.classList.add('date')
+        date.textContent = data.date;
+
+        const amountDis = document.createElement('td');
+        const amount = data.amount;
+        const div = document.createElement
+        
+
+        const deleteBtn = document.createElement('td');
+        deleteBtn.innerHTML = `<button class="delete">Delete</button>`;
+
+        // Add cells to the row
+        row.appendChild(description);
+        row.appendChild(selectionBox);
+        row.appendChild(date);
+        row.appendChild(amount);
+        row.appendChild(deleteBtn);
+
+        // Append the row to the table
+        document.getElementById('expenses').appendChild(row);
+    });
+    updateIncomeTotal();
+    updateExpenseTotal();
+    difference();
+}

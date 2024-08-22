@@ -79,9 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadExpenses() {
-    const q = query(collection(db, "expenses"), where("uid", "==", auth.currentUser.uid), orderBy("date","desc"));
-    //query created that fetches the documents from 'expenses' where the uid matches
-    //query(refrence to firestore collection, (optional query constraint where for firestore to filter), (optional order it by the date field in the collection descendint order))
+    const q = query(collection(db, "expenses"), where("uid", "==", auth.currentUser.uid), orderBy("date", "desc"));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
         const data = doc.data();
@@ -89,16 +87,37 @@ async function loadExpenses() {
 
         // Populate the row with data from Firestore
         const description = document.createElement('td');
-        description.textContent = data.description;
+        const desInput = document.createElement('input');
+        desInput.type = 'text'
+        desInput.value = data.description;
+        description.appendChild(desInput);
 
         const selectionBox = document.createElement('td');
-        selectionBox.textContent = data.type;
+        const selectElement = document.createElement('select');
+        const option1 = document.createElement('option');
+        const option2 = document.createElement('option');
+        option1.value = 'expense';
+        option1.textContent = 'Expense';
+        option2.value = 'income';
+        option2.textContent = 'Income';
+        selectElement.appendChild(option1);
+        selectElement.appendChild(option2);
+        selectElement.classList.add('selectBox');
+        selectElement.value = data.type;  // Set the value from Firestore
+        selectionBox.appendChild(selectElement);
 
         const date = document.createElement('td');
-        date.textContent = data.date;
+        const dateInput = document.createElement('input');
+        dateInput.type = 'date';
+        dateInput.value = data.date;
+        date.appendChild(dateInput);
 
         const amount = document.createElement('td');
-        amount.textContent = `$${data.amount.toFixed(2)}`;
+        const amountInput = document.createElement('input');
+        amountInput.type = 'number';
+        amountInput.classList.add('amount');
+        amountInput.value = data.amount;  // Set the value from Firestore
+        amount.appendChild(amountInput);
 
         const deleteBtn = document.createElement('td');
         deleteBtn.innerHTML = `<button class="delete">Delete</button>`;
@@ -114,6 +133,7 @@ async function loadExpenses() {
         document.getElementById('expenses').appendChild(row);
     });
 }
+
 
 // Call loadExpenses when DOM content is loaded
 
@@ -200,15 +220,25 @@ function updateIncomeTotal(){
     let totalIncome = 0;
     for(let i=1; i<colAmt; i++){
         const row = rows[i];
-        const selectBox = row.querySelector('.selectBox');
-        const amountNum = row.querySelector('.amount');
+        
 
-        if(selectBox && amountNum){ //make sure they are not null
-            const amount = parseFloat(amountNum.value) || 0;
-            if(selectBox.value === 'income'){
-                totalIncome += amount;
+        if(row.hasChildNodes()){
+            const selectBox = row.querySelector('.selectBox');
+            const amountNum = row.querySelector('.amount');
+            if(selectBox && amountNum){ //make sure they are not null
+                const amount = parseFloat(amountNum.value) || 0;
+                if(selectBox.value === 'income'){
+                    totalIncome += amount;
+                }
             }
+     }
+     else{
+        const amountNum = data.amount;
+        const type = data.type;
+        if(type == "income"){
+            totalIncome += amountNum;
         }
+     }
     }
 
     
