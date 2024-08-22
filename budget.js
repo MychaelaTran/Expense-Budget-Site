@@ -138,10 +138,16 @@ async function loadExpenses() {
         row.appendChild(date);
         row.appendChild(amount);
         row.appendChild(deleteBtn);
+        row.dataset.id = doc.id;
 
         // Append the row to the table
         document.getElementById('expenses').appendChild(row);
     });
+    //to load the data righrt away
+    updateIncomeTotal();
+    updateExpenseTotal();
+    difference();
+
 }
 
 
