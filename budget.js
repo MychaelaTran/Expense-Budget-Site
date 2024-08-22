@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, addDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -79,7 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadExpenses() {
-    const q = query(collection(db, "expenses"), where("uid", "==", auth.currentUser.uid));
+    const q = query(collection(db, "expenses"), where("uid", "==", auth.currentUser.uid), orderBy("date","desc"));
+    //query created that fetches the documents from 'expenses' where the uid matches
+    //query(refrence to firestore collection, (optional query constraint where for firestore to filter), (optional order it by the date field in the collection descendint order))
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
         const data = doc.data();
@@ -229,7 +231,7 @@ async function saveData(){
         if (description && type && date && amount) {
             try {
                 // Add or update the document for this row
-                await addDoc(collection(db, "expenses"), {
+                await addDoc(collection(db, "expenses"), { //saves a new document to expenses collection in firestore 
                     description: description,
                     type: type,
                     date: date,
