@@ -4,7 +4,7 @@ import { getFirestore, collection, query, where, getDocs, orderBy } from "https:
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 import { updateDoc, doc, addDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => { 
     onAuthStateChanged(auth, (user) => {
         if (user) {
             loadExpenses(); // Only call loadExpenses if the user is logged in
@@ -86,6 +86,8 @@ async function loadExpenses() {
         //each queryDocument is one document from expesnes collectopn
         const data = doc.data();
         const row = document.createElement('tr');
+
+        row.id = doc.id;
         
 
 
@@ -94,6 +96,7 @@ async function loadExpenses() {
         const desInput = document.createElement('input');
         desInput.type = 'text'
         desInput.value = data.description;
+        desInput.classList.add("description");
         description.appendChild(desInput);
 
         const selectionBox = document.createElement('td');
@@ -114,6 +117,7 @@ async function loadExpenses() {
         const dateInput = document.createElement('input');
         dateInput.type = 'date';
         dateInput.value = data.date;
+        dateInput.classList.add('date');
         date.appendChild(dateInput);
 
         const amount = document.createElement('td');
@@ -138,9 +142,9 @@ async function loadExpenses() {
         row.appendChild(date);
         row.appendChild(amount);
         row.appendChild(deleteBtn);
-        row.dataset.id = doc.id;
+    
 
-        // Append the row to the table
+        //add the creatred row
         document.getElementById('expenses').appendChild(row);
     });
     //to load the data righrt away
@@ -253,50 +257,50 @@ function updateIncomeTotal() {
 
 async function saveData() {
     const table = document.getElementById('expenses');
-    const rows = document.getElementsByTagName('tr');
+    const rows = table.getElementsByTagName('tr');
     const amtRows = rows.length;
 
-    for (let i = 0; i < amtRows; i++) {
+    for (let i = 1; i < amtRows; i++) {
         const row = rows[i];
+        console.log(row.id);
         const description = row.querySelector('.description')?.value || '';
+        console.log(`Description of row is: ${description}`);
         const type = row.querySelector('.selectBox')?.value || 'expense';
         const date = row.querySelector('.date')?.value || '';
         const amount = parseFloat(row.querySelector('.amount')?.value) || 0;
-        const docID = row.dataset.id;
 
-
-        //WORK ON THIS
         if (description && type && date && amount) {
             try {
-
-                if (docID) {//if docId already exits and not null for the row
-                    //update the specfic document
-                    await updateDoc(collection(db, "expenses", docID), {
+                if (row.hasAttribute('id')) { // If docId already exists and is not null for the row
+                    const docID = row.id;
+                    const docRef = doc(db, "expenses", docID);
+                    const dataUpdate = {
                         description: description,
                         type: type,
                         date: date,
                         amount: amount
-                    });
+                    };
 
-                }
-                else {
+                    console.log(`Updating document with id ${docID}`);
+                    await updateDoc(docRef, dataUpdate);
+                } else {
+                    console.log(`Adding new document`);
 
-                    //add the rpw if its new
                     await addDoc(collection(db, "expenses"), {
-                        //saves a new document to expenses collection in firestore 
                         description: description,
                         type: type,
                         date: date,
                         amount: amount,
-                        uid: auth.currentUser.uid //associate with the user
+                        uid: auth.currentUser.uid // Associate with the user
                     });
                 }
             } catch (e) {
-                console.error("Error updating row in Firebase: ", e);
+                console.error("Error updating or adding document in Firebase: ", e);
             }
         }
     }
 }
+
 
 
 function updateExpenseTotal() {
