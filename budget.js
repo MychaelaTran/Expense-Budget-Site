@@ -44,9 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     });
 
-    document.getElementById('save').addEventListener('click', async function () {
-        saveData();
-    })
+   
 
     //inital color of the first row bc not dynamically added 
 
@@ -269,7 +267,7 @@ async function saveData() {
         const date = row.querySelector('.date')?.value || '';
         const amount = parseFloat(row.querySelector('.amount')?.value) || 0;
 
-        if (description && type && date && amount) {
+        
             try {
                 if (row.hasAttribute('id')) { // If docId already exists and is not null for the row
                     const docID = row.id;
@@ -297,7 +295,7 @@ async function saveData() {
             } catch (e) {
                 console.error("Error updating or adding document in Firebase: ", e);
             }
-        }
+        
     }
 }
 
@@ -333,6 +331,12 @@ function difference() {
     const totalExpense = updateExpenseTotal();
     const difference = totalIncome - totalExpense;
     const differenceElement = document.getElementById('H1difference');
+    if(difference >= 0){
+        differenceElement.style.backgroundColor = 'rgba(68, 207, 68, 0.384)';
+    }
+    else{
+        differenceElement.style.backgroundColor = 'rgba(209, 75, 75, 0.384)';
+    }
     differenceElement.textContent = `$${difference.toFixed(2)}`;
 }
 
@@ -341,12 +345,12 @@ function difference() {
 
 
 
-document.getElementById('logoutButton').addEventListener('click', function () {
-    signOut(auth).then(() => {
-        // Sign-out successful, redirect to the login page
-        window.location.href = "login.html"; // Replace with your login page
-    }).catch((error) => {
-        // Handle errors here
+document.getElementById('logoutButton').addEventListener('click', async function () {
+    try {
+        await saveData();  //saveData before sign out 
+        await signOut(auth);
+        window.location.href = "login.html"; // Redirect to login page
+    } catch (error) {
         alert("Error logging out: " + error.message);
-    });
+    }
 });
