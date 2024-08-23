@@ -19,18 +19,16 @@ const auth = getAuth(app);
 
 const submit = document.getElementById('submit');
 submit.addEventListener("click", function(event){
-    event.preventDefault(); // Prevent the form from refreshing
+    event.preventDefault(); //prevetn refreshing 
 
     
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
-    // Signed up 
     const user = userCredential.user;
     alert("Creating Account")
     
-    // ...
   })
   .catch((error) => {
     const errorCode = error.code;
