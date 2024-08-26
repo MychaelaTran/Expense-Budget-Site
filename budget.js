@@ -86,11 +86,13 @@ document.addEventListener('DOMContentLoaded', () => {
             updateIncomeTotal();
             updateExpenseTotal();
             difference();
+            saveData();
 
         }
     });
 
     document.getElementById('monthPicker').addEventListener('change', function(){
+        saveData();
         const monthSelector = document.getElementById('monthPicker');
         const [year, month] = monthSelector.value.split('-');
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -99,6 +101,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         //load expesnes of selected month
         loadExpenses();
+    })
+    document.getElementById('monthPicker').addEventListener('click', function(){
+        saveData();
+        console.log('saved data')
+        const monthSelector = document.getElementById('monthPicker');
+        const [year, month] = monthSelector.value.split('-');
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const monthHeader = document.getElementById('month');
+        monthHeader.textContent = `${months[month -1]} ${year}`
+
+        //load expesnes of selected month
+       
     })
     //input changes (needed for when seleciton box experences no chnage og is expense)
     document.getElementById('expenses').addEventListener('input', function (event) {
@@ -116,91 +130,101 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 });
-
+//NEED TO MAKE SO IT MONTH SELECTS BYU THE DATE FIELD IN THE ROW NOT THE TOP BC IF U MAKE IT IN AUGUST BUT DATE IT JULY ITLL GO BY AUGUST
+//MAKE SO THE EXPENSE LOADS LIKE TOTALS BC NOT WHEN U SWITHC MONTHS 
 async function loadExpenses() {
-    const monthSelector = document.getElementById('monthPicker');
+    const monthSelector = document.getElementById('monthPicker'); //current month year
     const [year, month] = monthSelector.value.split('-');
     console.log(`loadexpenses ran and current month is ${year}-${month}`)
+
+    //clear expense table so when switch month itll reload based on month
+    const expensesTable = document.getElementById('expenses');
+    while (expensesTable.firstChild) {
+        expensesTable.removeChild(expensesTable.firstChild);
+    }
 
 
     const q = query(
         collection(db, "expenses"),
         where("uid", "==", auth.currentUser.uid),
         where("monthYear", "==", `${year}-${month}`),
-        orderBy("date", "desc"));
-    const queryDocument = await getDocs(q);
-    queryDocument.forEach((doc) => {
+        orderBy("date", "asc"));
+        const queryDocument = await getDocs(q);
+        queryDocument.forEach((doc) => {
 
-        //each queryDocument is one document from expesnes collectopn
-        const data = doc.data();
-        const docMonthYear = data.monthYear; //this is a string
+            //each queryDocument is one document from expesnes collectopn
+            const data = doc.data();
+            const docMonthYear = data.monthYear; //this is a string of the date yyyy-mm
+            
 
-        console.log(docMonthYear)
-        console.log(typeof docMonthYear)
-        console.log(`${year}-${month}`)
+          
 
-        if (docMonthYear == `${year}-${month}`) {
+            if (docMonthYear == `${year}-${month}` && !document.getElementById(doc.id)) {
+                //if current month year is same as the docs month year and its not on the tABLE
 
-            const row = document.createElement('tr');
+                const row = document.createElement('tr');
 
-            row.id = doc.id;
-
+                row.id = doc.id;
 
 
-            // Populate the row with data from Firestore
-            const description = document.createElement('td');
-            const desInput = document.createElement('input');
-            desInput.type = 'text'
-            desInput.value = data.description;
-            desInput.classList.add("description");
-            description.appendChild(desInput);
 
-            const selectionBox = document.createElement('td');
-            const selectElement = document.createElement('select');
-            const option1 = document.createElement('option');
-            const option2 = document.createElement('option');
-            option1.value = 'expense';
-            option1.textContent = 'Expense';
-            option2.value = 'income';
-            option2.textContent = 'Income';
-            selectElement.appendChild(option1);
-            selectElement.appendChild(option2);
-            selectElement.classList.add('selectBox');
-            selectElement.value = data.type;  // Set the value from Firestore
-            selectionBox.appendChild(selectElement);
+                //get data from firebase
+                const description = document.createElement('td');
+                const desInput = document.createElement('input');
+                desInput.type = 'text'
+                desInput.value = data.description;
+                desInput.classList.add("description");
+                description.appendChild(desInput);
+               // console.log(`${month} ${year}`)
+              //  console.log(`${desInput.value}`)
 
-            const date = document.createElement('td');
-            const dateInput = document.createElement('input');
-            dateInput.type = 'date';
-            dateInput.value = data.date;
-            dateInput.classList.add('date');
-            date.appendChild(dateInput);
+                const selectionBox = document.createElement('td');
+                const selectElement = document.createElement('select');
+                const option1 = document.createElement('option');
+                const option2 = document.createElement('option');
+                option1.value = 'expense';
+                option1.textContent = 'Expense';
+                option2.value = 'income';
+                option2.textContent = 'Income';
+                selectElement.appendChild(option1);
+                selectElement.appendChild(option2);
+                selectElement.classList.add('selectBox');
+                selectElement.value = data.type;  // Set the value from Firestore
+                selectionBox.appendChild(selectElement);
 
-            const amount = document.createElement('td');
-            const amountInput = document.createElement('input');
-            amountInput.type = 'number';
-            amountInput.classList.add('amount');
-            amountInput.value = data.amount;  // Set the value from Firestore
-            if (selectElement.value === 'income') {
-                amountInput.style.color = 'green';
+                const date = document.createElement('td');
+                const dateInput = document.createElement('input');
+                dateInput.type = 'date';
+                dateInput.value = data.date;
+                dateInput.classList.add('date');
+                date.appendChild(dateInput);
+
+                const amount = document.createElement('td');
+                const amountInput = document.createElement('input');
+                amountInput.type = 'number';
+                amountInput.classList.add('amount');
+                amountInput.value = data.amount;  // Set the value from Firestore
+                if (selectElement.value === 'income') {
+                    amountInput.style.color = 'green';
+                }
+                if (selectElement.value === 'expense') {
+                    amountInput.style.color = 'red';
+                }
+                amount.appendChild(amountInput);
+
+                const deleteBtn = document.createElement('td');
+                deleteBtn.innerHTML = `<button class="delete">Delete</button>`;
+
+                //add each to row
+                row.appendChild(description);
+                row.appendChild(selectionBox);
+                row.appendChild(date);
+                row.appendChild(amount);
+                row.appendChild(deleteBtn);
+                document.getElementById('expenses').appendChild(row);
+                
             }
-            if (selectElement.value === 'expense') {
-                amountInput.style.color = 'red';
-            }
-            amount.appendChild(amountInput);
-
-            const deleteBtn = document.createElement('td');
-            deleteBtn.innerHTML = `<button class="delete">Delete</button>`;
-
-            // Add cells to the row
-            row.appendChild(description);
-            row.appendChild(selectionBox);
-            row.appendChild(date);
-            row.appendChild(amount);
-            row.appendChild(deleteBtn);
-            document.getElementById('expenses').appendChild(row);
-
-        }
+            
 
     });
     //to load the data righrt away
@@ -221,6 +245,10 @@ newExpense.addEventListener('click', createExpense);
 async function createExpense() {
     const expenseTable = document.getElementById('expenses');
     const row = document.createElement('tr');
+
+    //give a temp id to check not to add a row twice
+    const tempId = 'temp-' + Math.random().toString(36).slice(2, 11);
+    row.id = tempId;
 
     for (let i = 0; i < 5; i++) {
         const rowElement = document.createElement('td');
@@ -294,7 +322,7 @@ function updateIncomeTotal() {
     let colAmt = rows.length;
     console.log(`number of rows ${colAmt}`);
     let totalIncome = 0;
-    for (let i = 1; i < colAmt; i++) {
+    for (let i = 0; i < colAmt; i++) {
         const row = rows[i];
         
         const selectBox = row.querySelector('.selectBox');
@@ -315,22 +343,30 @@ async function saveData() {
     const table = document.getElementById('expenses');
     const rows = table.getElementsByTagName('tr');
     const amtRows = rows.length;
+    console.log(amtRows)
     const userEmail = auth.currentUser.email;
+    
 
-    for (let i = 1; i < amtRows; i++) {
+    for (let i = 0; i < amtRows; i++) {
         const row = rows[i];
-        console.log(row.id);
+        
         const description = row.querySelector('.description')?.value || '';
         console.log(`Description of row is: ${description}`);
         const type = row.querySelector('.selectBox')?.value || 'expense';
+
+
         const date = row.querySelector('.date')?.value || '';
+        const monthYearOfRowSplit = date.split('-');
+        const monthYearRow = monthYearOfRowSplit[0] + '-' + monthYearOfRowSplit[1];
+        console.log(monthYearRow)
+
         const amount = parseFloat(row.querySelector('.amount')?.value) || 0;
         const monthSelector = document.getElementById('monthPicker')
         const [year, month] = monthSelector.value.split('-');
 
         
             try {
-                if (row.hasAttribute('id')) { // If docId already exists and is not null for the row
+                if (row.hasAttribute('id') && !row.id.startsWith('temp')) { // If docId already exists and is not null for the row
                     const docID = row.id;
                     const docRef = doc(db, "expenses", docID);
                     const dataUpdate = {
@@ -339,7 +375,7 @@ async function saveData() {
                         date: date,
                         amount: amount,
                         email: userEmail, 
-                        monthYear: `${year}-${month}`
+                        monthYear: monthYearRow
                     };
 
                     console.log(`Updating document with id ${docID}`);
@@ -352,6 +388,7 @@ async function saveData() {
                         type: type,
                         date: date,
                         amount: amount,
+                        monthYear: monthYearRow,
                         uid: auth.currentUser.uid //matching with user that is currentl ylogged in
                     });
                 }
@@ -372,7 +409,7 @@ function updateExpenseTotal() {
     let colAmt = rows.length;
     let totalExpense = 0;
 
-    for (let i = 1; i < colAmt; i++) {
+    for (let i = 0; i < colAmt; i++) {
         const row = rows[i];
         const selectionBox = row.querySelector('.selectBox');
         const amountNum = row.querySelector('.amount');
