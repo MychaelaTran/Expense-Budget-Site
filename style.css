@@ -1,175 +1,109 @@
-#header1{
-    background-color: rgb(153, 245, 153);
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+#header1 {
+    background-color: #ffcccb;
     text-align: center;
     font-size: 2.5em;
     padding: 20px;
-}
-header{
-    background-color: blue;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); ;
-    padding-top: 40px;
-    
+    border-radius: 15px;
+    margin: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.data{
-    display:none;
+.monthSelector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
 }
 
-.g-signin2{
-    position: absolute;
-    top: 50%;
-    left:50%;
-    margin-top:-50px;
-    margin-left:-50px;
+#month {
+    font-size: 1.5em;
+    margin-right: 20px;
 }
-table{
+
+#monthPicker {
+    font-size: 1em;
+    padding: 5px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+table {
     width: 96%;
-    margin-left: 10px;
+    margin: 0 auto 20px;
     border-collapse: collapse;
-    padding-top: 20px;
-    
-}
-table, tr, td{
-    border: 1px solid black;
-    
-     
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-}
-th {
-    background-color: #f2f2f2;
-    text-align: left;
-}
-tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-/*this is to have the width set for the cols of the editable elements*/
-#startD{
-    width:60%;
-}
-#startDa{
-    width:15%;
-}
-#startA{
-    width:15%
-}
-#startS{
-    width:5%;
-}
-#startDel{
-    width:min-content;
-}
-.description, .date, .amount1{
-    width: 100%;
-}
-
-
-
-
-/*normal state*/
-input {
-    border: none;
-    outline: none; 
-}
-
-/* Remove border in focus state */
-input:focus {
-    border: none;
-    outline: none; /* Optional: remove outline */
-}
-input:hover{
-    border: 1px solid black;
-}
-
-th,td{
     padding: 15px;
-}
-input.text{
-    max-width: 60%; /* Example value, adjust as needed */
-    overflow-wrap: break-word; /* Ensure long words break and wrap */
-    word-wrap: break-word; /* Older property for compatibility */
-    white-space: normal; /* Ensure text wraps correctly */
+    border: 1px solid #ccc;
+    text-align: center;
 }
 
-#descriptionE{
-    background: transparent;
-    bordeR: none;
-    outline: none;
-    box-shadow: none;
-    resize: none; /* Prevents resizing of the textarea */
-    overflow: hidden; /* Hides scrollbar */
-
-}
-#newExpense, #save{
-    padding: 8px;
-    margin: 20px;
-    cursor: pointer;
-}
-#newExpense:hover, #save:hover{
-    background-color: gray;
-    size: 1.2em;
+th {
+    background-color: #e0f7fa;
+    font-weight: bold;
 }
 
-#amountI{
-    background-color: transparent;
-    background: transparent;
-    bordeR: none;
-    outline: none;
-    color: transparent;
-    box-shadow: none;
+tr:nth-child(even) {
+    background-color: #f1f1f1;
 }
 
-.delete{ 
-    border-radius: 5px;
-    
-}
-.delete:hover{
-    background-color: gray;
+#newExpense, #logoutButton {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 1.2em;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
 }
 
-.totals{
+#newExpense:hover {
+    background-color: #82dde4;
+}
+
+#logoutButton:hover {
+    background-color: #ff6f61;
+}
+
+.totals {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
-    width:90%;
+    width: 90%;
+    margin: 0 auto;
 }
-#H1totalIncome, #H1totalExpense, #H1difference {
-    position: relative;
-    padding: 20px;
-    margin: 20px;
-    border: 2px solid black;
-    display: inline-block; /*makes border aroundrtext*/
-}
-
 
 .totalIncome, .totalExpense, .difference {
-    box-sizing: border-box; 
-    padding: 10px;
-    text-align: center; 
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
-#H1totalIncome{
-    background-color: rgba(68, 207, 68, 0.384);
+#H1totalIncome {
+    background-color: #b2fab4;
 }
 
-#H1totalExpense{
-    background-color: rgba(209, 75, 75, 0.384);
+#H1totalExpense {
+    background-color: #ffcdd2;
 }
 
-#logoutButton{
-    padding: 5px 5px;
-    margin: 10px;
+#H1difference {
+    background-color: #b3e5fc;
 }
-.monthSelector{
-    display:flex;
-}
-#month{
-    margin: 20px;
-}
-#monthPicker{
-    margin: 20px;
+
+
+.description{
+    width: 90%;
 }
