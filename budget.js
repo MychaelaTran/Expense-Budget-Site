@@ -178,6 +178,20 @@ async function loadExpenses() {
                // console.log(`${month} ${year}`)
               //  console.log(`${desInput.value}`)
 
+                const categoryBox = document.createElement('td');
+                const categoryElement = document.createElement('select');
+                
+                const categories = ['Groceries', 'Entertainment', 'House', 'Social','Bills', 'Pay','Other'];
+                    categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    categoryElement.appendChild(option);
+                })
+                categoryElement.classList.add('categorySelect');
+                categoryElement.value = data.category;
+                categoryBox.appendChild(categoryElement);
+
                 const selectionBox = document.createElement('td');
                 const selectElement = document.createElement('select');
                 const option1 = document.createElement('option');
@@ -217,6 +231,7 @@ async function loadExpenses() {
 
                 //add each to row
                 row.appendChild(description);
+                row.append(categoryBox)
                 row.appendChild(selectionBox);
                 row.appendChild(date);
                 row.appendChild(amount);
@@ -246,11 +261,7 @@ async function createExpense() {
     const expenseTable = document.getElementById('expenses');
     const row = document.createElement('tr');
 
-    //give a temp id to check not to add a row twice
-    const tempId = 'temp-' + Math.random().toString(36).slice(2, 11);
-    row.id = tempId;
-
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
         const rowElement = document.createElement('td');
         const input = document.createElement('input');
 
@@ -258,7 +269,38 @@ async function createExpense() {
             input.type = 'text';
             input.classList.add('description');
             rowElement.appendChild(input);
-        } else if (i === 1) { //select box
+        } else if (i === 1) { //category
+            const categorySelect = document.createElement('select');
+            const categories = ['Groceries', 'Entertainment', 'House', 'Social','Bills','Pay', 'Other'];
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categorySelect.appendChild(option);
+            });
+            categorySelect.classList.add('categorySelect');
+
+            /*other custom inpit
+            const customCat = document.createElement('input');
+            customCat.type = 'text';
+            customCat.classList.add('customCat')
+            customCat.placeholder = 'Enter a category';
+            customCat.classList.add('customCat');
+            customCat.style.display = 'none';  
+
+            categorySelect.addEventListener('change', function(){
+                if (categorySelect.value === 'Other') {
+                    customCat.style.display = 'block'; 
+                } else {
+                    customCat.style.display = 'none';  
+                }
+            });
+
+            rowElement.appendChild(customCat);  
+            */
+            rowElement.appendChild(categorySelect);
+            
+        } else if (i === 2) { //income/expesne
             const selectionBox = document.createElement('select');
             const option1 = document.createElement('option');
             const option2 = document.createElement('option');
@@ -270,15 +312,15 @@ async function createExpense() {
             selectionBox.appendChild(option2);
             selectionBox.classList.add('selectBox');
             rowElement.appendChild(selectionBox);
-        } else if (i === 2) { //date
+        } else if (i === 3) { //date
             input.type = 'date';
             input.classList.add('date');
             rowElement.appendChild(input);
-        } else if (i === 3) { //amount
+        } else if (i === 4) { //amount
             input.type = 'number';
             input.classList.add('amount');
             rowElement.appendChild(input);
-        } else if (i === 4) { //delete button
+        } else if (i === 5) { //delete button
             const button = document.createElement('button');
             button.textContent = 'Delete';
             button.classList.add('delete');
@@ -288,16 +330,13 @@ async function createExpense() {
         row.appendChild(rowElement);
     }
 
-    //apply colour after each row (default is expense)
     updateAmountColor(row);
-
     expenseTable.appendChild(row);
-
-
 }
 
 
-//ISSUE IS its savinga the data to firebase BEFORE its edited not adter
+
+
 
 
 
@@ -364,6 +403,8 @@ async function saveData() {
         const monthSelector = document.getElementById('monthPicker')
         const [year, month] = monthSelector.value.split('-');
 
+        const category = row.querySelector('.categorySelect')?.value || 'Groceries'
+
         
             try {
                 if (row.hasAttribute('id') && !row.id.startsWith('temp')) { // If docId already exists and is not null for the row
@@ -371,6 +412,7 @@ async function saveData() {
                     const docRef = doc(db, "expenses", docID);
                     const dataUpdate = {
                         description: description,
+                        category: category,
                         type: type,
                         date: date,
                         amount: amount,

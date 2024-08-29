@@ -15,39 +15,16 @@
       <h1>Budgeting/Expense Tracker Site!</h1>
   </header>
 
-  <header id="tabs">
-  
-    <a href="budget.html">Monthly Sort</a>  
-    <a href="categorySort.html">Category Sort</a>
-    <a href="graphs.html">Graphs</a>
-    <hr>
-
-</header>
+ 
 
   <div class="monthSelector">
     <h1 id="month"></h1>
     <input type="month" id="monthPicker" name="month">
   </div>
-    
-    <table id="expenses">
-        <tr>
-          <th>Description</th>
-          <th>Expense/Income</th>
-          <th>Date</th>
-          <th>Amount</th>
-        </tr>
 
-        
-        <!--need t dynamically add tr with td inside -->
-      </table>
+  <h5 id="budgetMonth">Budget For Month: </h1>
 
-      <button id="newExpense">Add Row</button>
-    
-
-      <br>
-      <br>
-
-      <div class="totals">
+    <div class="totals">
 
         <div class =totalIncome>
             <h1 id="H1totalIncome">$0.00</h1>
@@ -64,6 +41,29 @@
             <h1>Difference</h1>
         </div>
     </div>
+
+    <br> 
+    
+    <table id="expenses">
+        <tr>
+          <th>Description</th>
+          <th>Category</th>
+          <th>Expense/Income</th>
+          <th>Date</th>
+          <th>Amount</th>
+        </tr>
+
+        
+        <!--need t dynamically add tr with td inside -->
+      </table>
+
+      <button id="newExpense">Add Row</button>
+    
+
+      <br>
+      <br>
+
+      
 
     <button id="logoutButton">Log Out</button>
 

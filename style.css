@@ -4,6 +4,15 @@ body {
     color: #333;
 }
 
+.delete{
+    border-radius: 5px;
+}
+
+#budgetMonth{
+    margin:20px;
+    font-weight: bold;
+}
+
 #tabs{
     background-color: #f9f9f9;
     margin:20px;
@@ -94,25 +103,39 @@ tr:nth-child(even) {
 
 .totalIncome, .totalExpense, .difference {
     background-color: #ffffff;
-    padding: 20px;
+    padding: 10px;
     border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
+.totalIncome h1, .totalExpense h1, .difference h1{
+    font-size: 1.5em;
+}
+
 #H1totalIncome {
     background-color: #b2fab4;
+    font-size: 1.5em;
 }
 
 #H1totalExpense {
     background-color: #ffcdd2;
+    font-size: 1.5em;
+
 }
 
 #H1difference {
     background-color: #b3e5fc;
+    font-size: 1.5em;
+
 }
 
 
 .description{
     width: 90%;
+}
+
+.customCat{
+    width:80%;
+    text-align: center;
 }
