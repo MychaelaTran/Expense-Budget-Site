@@ -4,6 +4,15 @@ body {
     color: #333;
 }
 
+#tabs{
+    background-color: #f9f9f9;
+    margin:20px;
+    padding:10px;
+}
+#tabs a{
+    margin-right: 20px;
+}
+
 #header1 {
     background-color: #ffcccb;
     text-align: center;
