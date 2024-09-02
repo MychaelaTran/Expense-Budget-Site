@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/fireba
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 import { getFirestore, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-import { updateDoc, doc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+import { updateDoc, doc, setDoc, getDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 
 const firebaseConfig = {
@@ -130,64 +130,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 });
-//NEED TO MAKE SO IT MONTH SELECTS BYU THE DATE FIELD IN THE ROW NOT THE TOP BC IF U MAKE IT IN AUGUST BUT DATE IT JULY ITLL GO BY AUGUST
-//MAKE SO THE EXPENSE LOADS LIKE TOTALS BC NOT WHEN U SWITHC MONTHS 
-async function loadExpenses() {
-    const monthSelector = document.getElementById('monthPicker'); //current month year
-    const [year, month] = monthSelector.value.split('-');
-    console.log(`loadexpenses ran and current month is ${year}-${month}`)
 
-    //clear expense table so when switch month itll reload based on month
+
+async function loadExpenses() {
+    const monthSelector = document.getElementById('monthPicker');
+    const [year, month] = monthSelector.value.split('-');
+    console.log(`loadExpenses ran and current month is ${year}-${month}`);
+
+    //clearexpense table so when switching months it reloads based on month
     const expensesTable = document.getElementById('expenses');
     while (expensesTable.firstChild) {
         expensesTable.removeChild(expensesTable.firstChild);
     }
 
+    try {
+        //expense field
+        const expenseQuery = query(
+            collection(db, "expenses"),
+            where("uid", "==", auth.currentUser.uid),
+            where("monthYear", "==", `${year}-${month}`),
+            orderBy("date", "asc")
+        );
+        const expenseDocs = await getDocs(expenseQuery);
 
-    const q = query(
-        collection(db, "expenses"),
-        where("uid", "==", auth.currentUser.uid),
-        where("monthYear", "==", `${year}-${month}`),
-        orderBy("date", "asc"));
-        const queryDocument = await getDocs(q);
-        queryDocument.forEach((doc) => {
-
-            //each queryDocument is one document from expesnes collectopn
+        expenseDocs.forEach(doc => {
             const data = doc.data();
-            const docMonthYear = data.monthYear; //this is a string of the date yyyy-mm
-            
+            const docMonthYear = data.monthYear;
 
-          
-
-            if (docMonthYear == `${year}-${month}` && !document.getElementById(doc.id)) {
-                //if current month year is same as the docs month year and its not on the tABLE
-
+            if (docMonthYear === `${year}-${month}` && !document.getElementById(doc.id)) { //load it if its right minth and year
                 const row = document.createElement('tr');
-
                 row.id = doc.id;
 
-
-
-                //get data from firebase
                 const description = document.createElement('td');
                 const desInput = document.createElement('input');
-                desInput.type = 'text'
+                desInput.type = 'text';
                 desInput.value = data.description;
                 desInput.classList.add("description");
                 description.appendChild(desInput);
-               // console.log(`${month} ${year}`)
-              //  console.log(`${desInput.value}`)
 
                 const categoryBox = document.createElement('td');
                 const categoryElement = document.createElement('select');
-                
-                const categories = ['Groceries', 'Entertainment', 'House', 'Social','Bills', 'Pay','Other'];
-                    categories.forEach(category => {
+                const categories = ['Groceries', 'Entertainment', 'House', 'Social', 'Bills', 'Pay', 'Other'];
+                categories.forEach(category => {
                     const option = document.createElement('option');
                     option.value = category;
                     option.textContent = category;
                     categoryElement.appendChild(option);
-                })
+                });
                 categoryElement.classList.add('categorySelect');
                 categoryElement.value = data.category;
                 categoryBox.appendChild(categoryElement);
@@ -203,7 +192,7 @@ async function loadExpenses() {
                 selectElement.appendChild(option1);
                 selectElement.appendChild(option2);
                 selectElement.classList.add('selectBox');
-                selectElement.value = data.type;  // Set the value from Firestore
+                selectElement.value = data.type;
                 selectionBox.appendChild(selectElement);
 
                 const date = document.createElement('td');
@@ -217,36 +206,48 @@ async function loadExpenses() {
                 const amountInput = document.createElement('input');
                 amountInput.type = 'number';
                 amountInput.classList.add('amount');
-                amountInput.value = data.amount;  // Set the value from Firestore
-                if (selectElement.value === 'income') {
-                    amountInput.style.color = 'green';
-                }
-                if (selectElement.value === 'expense') {
-                    amountInput.style.color = 'red';
-                }
+                amountInput.value = data.amount;
+                amountInput.style.color = selectElement.value === 'income' ? 'green' : 'red';
                 amount.appendChild(amountInput);
 
                 const deleteBtn = document.createElement('td');
                 deleteBtn.innerHTML = `<button class="delete">Delete</button>`;
 
-                //add each to row
                 row.appendChild(description);
-                row.append(categoryBox)
+                row.appendChild(categoryBox);
                 row.appendChild(selectionBox);
                 row.appendChild(date);
                 row.appendChild(amount);
                 row.appendChild(deleteBtn);
-                document.getElementById('expenses').appendChild(row);
-                
+                expensesTable.appendChild(row);
             }
-            
+        });
 
-    });
-    //to load the data righrt away
-    updateIncomeTotal();
-    updateExpenseTotal();
-    difference();
+        // Load budgets
+        const userBudgetDocID = auth.currentUser.uid;
+        const budgetDocRef = doc(db, "budgets", userBudgetDocID);
+        const budgetSnapshot = await getDoc(budgetDocRef);
 
+        if (budgetSnapshot.exists()) {
+            const budgetData = budgetSnapshot.data();
+            document.getElementById('grocery').value = budgetData.groceries || 0;
+            document.getElementById('entertainment').value = budgetData.entertainment || 0;
+            document.getElementById('house').value = budgetData.house || 0;
+            document.getElementById('social').value = budgetData.social || 0;
+            document.getElementById('bills').value = budgetData.bills || 0;
+            document.getElementById('other').value = budgetData.other || 0;
+        } else {
+            console.log("No budget document found for user.");
+        }
+
+        // Update totals and difference
+        updateIncomeTotal();
+        updateExpenseTotal();
+        difference();
+
+    } catch (e) {
+        console.error("Error loading data: ", e);
+    }
 }
 
 
@@ -444,7 +445,51 @@ async function saveData() {
             }
         
     }
+
+    
+    try {
+        const groceries = parseFloat(document.getElementById('grocery').value) || 0;
+        console.log(groceries)
+        const entertainment = parseFloat(document.getElementById('entertainment').value) || 0;
+        const house = parseFloat(document.getElementById('house').value) || 0;
+        const social = parseFloat(document.getElementById('social').value) || 0;
+        const bills = parseFloat(document.getElementById('bills').value) || 0;
+        const other = parseFloat(document.getElementById('other').value) || 0; 
+    
+        const docID = auth.currentUser.uid;
+        const docRef = doc(db, "budgets", docID);
+        
+        //update doc if it exits 
+        const docSnapshot = await getDoc(docRef);
+        if (docSnapshot.exists()) {
+            const dataUpdate = {
+                groceries: groceries,
+                entertainment: entertainment,
+                house: house,
+                social: social,
+                bills: bills,
+                other: other, 
+            };
+            await updateDoc(docRef, dataUpdate);
+            console.log(`Updated budget document with id ${docID}`);
+        } else {
+            //if doesnt exist 
+            await setDoc(docRef, {
+                groceries: groceries,
+                entertainment: entertainment,
+                house: house,
+                social: social,
+                bills: bills,
+                other: other, 
+                uid: auth.currentUser.uid
+            });
+            console.log(`Added new budget document`);
+        }
+    } catch (e) {
+        console.error("Error updating or adding document in Firebase: ", e);
+    }
 }
+    
 
 
 

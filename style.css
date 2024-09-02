@@ -145,3 +145,35 @@ tr:nth-child(even) {
     margin:20px;
     font-weight: bold;
 }
+
+#budgetCategories {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: auto;
+    width: 90%;
+  }
+  
+  .category {
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .category h5 {
+    margin: 0;
+    justify-items: center;
+  }
+  
+  .categoryInput {
+    width: 70px;
+    margin-top: 5px; 
+    margin-right: auto;
+    background-color: transparent; 
+    border: 1px solid #ccc;
+  }
+
+  .categoryInput:focus {
+    outline: none;  
+    border-color: #aaa;
+  }
+  
