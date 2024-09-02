@@ -315,6 +315,11 @@ async function createExpense() {
         } else if (i === 3) { //date
             input.type = 'date';
             input.classList.add('date');
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0'); 
+            const day = String(now.getDate()).padStart(2, '0'); 
+            input.value = `${year}-${month}-${day}`; 
             rowElement.appendChild(input);
         } else if (i === 4) { //amount
             input.type = 'number';
@@ -496,3 +501,33 @@ document.getElementById('logoutButton').addEventListener('click', async function
         alert("Error logging out: " + error.message);
     }
 });
+
+
+    // Sample data for the pie chart
+    const data = {
+        labels: ['Food', 'Entertainment', 'Bills', 'Other'],
+        datasets: [{
+            data: [300, 150, 100, 50], // Replace with your data
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'], // Colors for each slice
+            hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+        }]
+    };
+
+    // Options for the pie chart
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top', // Position of the legend (e.g., top, bottom, left, right)
+            }
+        }
+    };
+
+    // Creating the pie chart
+    const ctx = document.getElementById('myPieChart').getContext('2d');
+    const myPieChart = new Chart(ctx, {
+        type: 'pie', // Chart type: pie
+        data: data,
+        options: options
+    });
+

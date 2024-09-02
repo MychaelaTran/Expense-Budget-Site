@@ -133,9 +133,15 @@ tr:nth-child(even) {
 
 .description{
     width: 90%;
+    min-width: 70px;
 }
 
 .customCat{
     width:80%;
     text-align: center;
+}
+
+#Breakdown{
+    margin:20px;
+    font-weight: bold;
 }
