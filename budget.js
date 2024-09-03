@@ -239,7 +239,7 @@ async function loadExpenses() {
         console.error("Error loading data: ", e);
     }
 }
-
+//issue is things keep reseting to zero idk why 
 async function loadBudgets(){
     try{
         const monthYearValue = document.getElementById('monthPicker').value;
@@ -267,7 +267,7 @@ async function loadBudgets(){
                 bills.value = data.bills;
 
                 const other = document.getElementById('other');
-                groceries.value = data.other;
+                other.value = data.other;
                 
             }
         });
