@@ -177,3 +177,6 @@ tr:nth-child(even) {
     border-color: #aaa;
   }
   
+#budgets{
+    margin:20px;
+}

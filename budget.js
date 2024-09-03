@@ -41,7 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                loadExpenses(); // Only call loadExpenses if the user is logged in
+                loadExpenses(); //call when user logs in
+                loadBudgets();
                 console.log('loaded user data')
             } else {
                 // User is signed out
@@ -87,12 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
             updateExpenseTotal();
             difference();
             saveData();
+    
 
         }
     });
 
     document.getElementById('monthPicker').addEventListener('change', function(){
         saveData();
+
         const monthSelector = document.getElementById('monthPicker');
         const [year, month] = monthSelector.value.split('-');
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -101,9 +104,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         //load expesnes of selected month
         loadExpenses();
+        loadBudgets();
     })
     document.getElementById('monthPicker').addEventListener('click', function(){
         saveData();
+        saveBudgetData();
         console.log('saved data')
         const monthSelector = document.getElementById('monthPicker');
         const [year, month] = monthSelector.value.split('-');
@@ -134,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadExpenses() {
     const monthSelector = document.getElementById('monthPicker');
+    const monthYearValue = monthSelector.value;
     const [year, month] = monthSelector.value.split('-');
     console.log(`loadExpenses ran and current month is ${year}-${month}`);
 
@@ -222,23 +228,7 @@ async function loadExpenses() {
                 expensesTable.appendChild(row);
             }
         });
-
-        // Load budgets
-        const userBudgetDocID = auth.currentUser.uid;
-        const budgetDocRef = doc(db, "budgets", userBudgetDocID);
-        const budgetSnapshot = await getDoc(budgetDocRef);
-
-        if (budgetSnapshot.exists()) {
-            const budgetData = budgetSnapshot.data();
-            document.getElementById('grocery').value = budgetData.groceries || 0;
-            document.getElementById('entertainment').value = budgetData.entertainment || 0;
-            document.getElementById('house').value = budgetData.house || 0;
-            document.getElementById('social').value = budgetData.social || 0;
-            document.getElementById('bills').value = budgetData.bills || 0;
-            document.getElementById('other').value = budgetData.other || 0;
-        } else {
-            console.log("No budget document found for user.");
-        }
+      
 
         // Update totals and difference
         updateIncomeTotal();
@@ -249,6 +239,97 @@ async function loadExpenses() {
         console.error("Error loading data: ", e);
     }
 }
+
+async function loadBudgets(){
+    try{
+        const monthYearValue = document.getElementById('monthPicker').value;
+        const uid = auth.currentUser.uid;
+
+        const q = query(collection(db, "budgets"), where("uid", "==", uid));
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach(doc => {
+            const data = doc.data();
+            if(data.monthYearB === monthYearValue){
+                const groceries = document.getElementById('grocery');
+                groceries.value = data.groceries;
+
+                const entertainment = document.getElementById('entertainment');
+                entertainment.value = data.entertainment;
+
+                const house = document.getElementById('house');
+                house.value = data.house;
+                
+                const social = document.getElementById('social');
+                social.value = data.social;
+                
+                const bills = document.getElementById('bills');
+                bills.value = data.bills;
+
+                const other = document.getElementById('other');
+                groceries.value = data.other;
+                
+            }
+        });
+
+    }
+    catch (error) {
+        console.error("Error loading budgets: ", error);
+    }
+}
+
+async function saveBudgetData() {
+    try {
+        const monthYearValue = document.getElementById('monthPicker').value;
+        const uid = auth.currentUser.uid;
+
+        //firestore querty of budgets
+        const q = query(collection(db, "budgets"), where("uid", "==", uid));
+        const querySnapshot = await getDocs(q);
+
+        let docExists = false;
+
+        //iterate through all until find mathicn month 
+        querySnapshot.forEach(async (doc) => {
+            const budgetData = doc.data();
+
+            if (budgetData.monthYearB === monthYearValue) {
+                docExists = true;
+                const docRef = doc.ref;
+
+                await updateDoc(docRef, {
+                    groceries: parseFloat(document.getElementById('grocery').value) || 0,
+                    entertainment: parseFloat(document.getElementById('entertainment').value) || 0,
+                    house: parseFloat(document.getElementById('house').value) || 0,
+                    social: parseFloat(document.getElementById('social').value) || 0,
+                    bills: parseFloat(document.getElementById('bills').value) || 0,
+                    other: parseFloat(document.getElementById('other').value) || 0,
+                });
+
+                console.log(`Updated budget document for ${monthYearValue}`);
+            }
+        });
+
+        //crate new if none exits 
+        if (!docExists) {
+            const newDocRef = doc(collection(db, "budgets"));
+            await setDoc(newDocRef, {
+                uid: uid,
+                monthYearB: monthYearValue,
+                groceries: parseFloat(document.getElementById('grocery').value) || 0,
+                entertainment: parseFloat(document.getElementById('entertainment').value) || 0,
+                house: parseFloat(document.getElementById('house').value) || 0,
+                social: parseFloat(document.getElementById('social').value) || 0,
+                bills: parseFloat(document.getElementById('bills').value) || 0,
+                other: parseFloat(document.getElementById('other').value) || 0,
+            });
+
+        }
+    } catch (e) {
+        console.error("Error updating or creating budget document: ", e);
+    }
+}
+
 
 
 //Call loadExpenses when DOM content is loaded
@@ -446,48 +527,6 @@ async function saveData() {
         
     }
 
-    
-    try {
-        const groceries = parseFloat(document.getElementById('grocery').value) || 0;
-        console.log(groceries)
-        const entertainment = parseFloat(document.getElementById('entertainment').value) || 0;
-        const house = parseFloat(document.getElementById('house').value) || 0;
-        const social = parseFloat(document.getElementById('social').value) || 0;
-        const bills = parseFloat(document.getElementById('bills').value) || 0;
-        const other = parseFloat(document.getElementById('other').value) || 0; 
-    
-        const docID = auth.currentUser.uid;
-        const docRef = doc(db, "budgets", docID);
-        
-        //update doc if it exits 
-        const docSnapshot = await getDoc(docRef);
-        if (docSnapshot.exists()) {
-            const dataUpdate = {
-                groceries: groceries,
-                entertainment: entertainment,
-                house: house,
-                social: social,
-                bills: bills,
-                other: other, 
-            };
-            await updateDoc(docRef, dataUpdate);
-            console.log(`Updated budget document with id ${docID}`);
-        } else {
-            //if doesnt exist 
-            await setDoc(docRef, {
-                groceries: groceries,
-                entertainment: entertainment,
-                house: house,
-                social: social,
-                bills: bills,
-                other: other, 
-                uid: auth.currentUser.uid
-            });
-            console.log(`Added new budget document`);
-        }
-    } catch (e) {
-        console.error("Error updating or adding document in Firebase: ", e);
-    }
 }
     
 
@@ -540,6 +579,7 @@ function difference() {
 document.getElementById('logoutButton').addEventListener('click', async function () {
     try {
         await saveData();  //saveData before sign out 
+        await saveBudgetData();
         await signOut(auth);
         window.location.href = "login.html"; //go to login poage
     } catch (error) {
