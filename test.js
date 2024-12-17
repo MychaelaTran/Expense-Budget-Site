@@ -1,1 +1,0 @@
-const slay  = 5;
